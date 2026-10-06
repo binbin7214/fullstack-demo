@@ -1,0 +1,26 @@
+generator client {
+  provider = "prisma-client-js"
+}
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+model todos {
+  id          Int       @id @default(autoincrement())
+  title       String    @db.VarChar(255) // 新增这一行
+  content     String    @db.VarChar(255)
+  finished    Int?      @default(0) @db.TinyInt
+  userId      Int
+  create_time DateTime? @default(now()) @db.DateTime(0)
+  user        users     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId])
+}
+
+
+model users {
+  id          Int       @id @default(autoincrement())
+  username    String    @unique(map: "username") @db.VarChar(50)
+  password    String    @db.VarChar(100)
+  create_time DateTime? @default(now()) @db.DateTime(0)
+  todos       todos[]
+}
